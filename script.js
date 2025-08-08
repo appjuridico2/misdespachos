@@ -129,6 +129,18 @@ document.addEventListener('DOMContentLoaded', () => {
        description: 'Notaría pública localizada en Av. Paseo del Pedregal 150, Jardines del Pedregal, Ciudad de México; presta diversos servicios notariales a la comunidad.',
        jobs: ['Notario Auxiliar', 'Asistente legal'],
        reviews: [] }
+
+    // Nuevas notarías añadidas
+    ,{ id: 105,
+       name: 'Notaría 6 (Claudio Juan Ramón Hernández de Rubín)',
+       description: 'Notaría pública de la Ciudad de México dirigida por Claudio Juan Ramón Hernández de Rubín; ofrece servicios como testamentos, otorgamiento de poderes, sucesiones, compra‑venta de inmuebles, fideicomisos y constitución de sociedades【616500515607461†L6-L30】. El notario se desempeña como Notario 6 desde marzo de 2016【616500515607461†L32-L39】.',
+       jobs: ['Notario Auxiliar', 'Asistente legal'],
+       reviews: [] }
+    ,{ id: 106,
+       name: 'Notaría 180 (Luis Eduardo Paredes Sánchez)',
+       description: 'Notaría 180 ubicada en Gabriel Mancera 1022, colonia Del Valle, Benito Juárez, Ciudad de México; a cargo del Lic. Luis Eduardo Paredes Sánchez desde 2012. La notaría busca proporcionar un servicio público notarial de gran calidad, rápido y flexible, brindando certeza jurídica a sus clientes【602843964979032†L31-L37】【602843964979032†L63-L67】.',
+       jobs: ['Notario Auxiliar', 'Asistente legal'],
+       reviews: [] }
   ];
 
   // Recuperar datos desde localStorage si existen para mantener reseñas añadidas
