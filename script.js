@@ -108,6 +108,27 @@ document.addEventListener('DOMContentLoaded', () => {
     ,{ id: 98, name: 'De la Garza y Acosta, S.C.', description: 'Despacho de abogados reconocido por Legal 500 en México.', jobs: ['Abogado Junior', 'Pasante legal'], reviews: [] }
     ,{ id: 99, name: 'López Melih y Estrada, S.C.', description: 'Despacho de abogados reconocido por Legal 500 en México.', jobs: ['Abogado Junior', 'Pasante legal'], reviews: [] }
     ,{ id: 100, name: 'CDA Abogados', description: 'Despacho de abogados reconocido por Legal 500 en México.', jobs: ['Abogado Junior', 'Pasante legal'], reviews: [] }
+    // Notarías relevantes de la Ciudad de México añadidas a la lista
+    ,{ id: 101,
+       name: 'Notaría 29 (Luis Antonio Montes de Oca Mayagoitia)',
+       description: 'Notaría pública ubicada en la Ciudad de México que ofrece servicios como transmisiones inmobiliarias, fideicomisos, constitución de sociedades, testamentos y más, según su sitio oficial.',
+       jobs: ['Notario Auxiliar', 'Asistente legal'],
+       reviews: [] }
+    ,{ id: 102,
+       name: 'Notaría 44 (Praga 39, Juárez)',
+       description: 'Notaría pública situada en la colonia Juárez, Ciudad de México, identificada por el Colegio Nacional del Notariado Mexicano como notaría titular en la dirección Praga 39.',
+       jobs: ['Notario Auxiliar', 'Asistente legal'],
+       reviews: [] }
+    ,{ id: 103,
+       name: 'Notarías 92 y 145',
+       description: 'Dos notarías ubicadas en la calle Patricio Sanz 1101, en Benito Juárez, Ciudad de México, que destacan por su importancia en el centro de la ciudad y ofrecen servicios como autenticaciones, testamentos, poderes y asesorías.',
+       jobs: ['Notario Auxiliar', 'Asistente legal'],
+       reviews: [] }
+    ,{ id: 104,
+       name: 'Notaría 183 (Paseo del Pedregal)',
+       description: 'Notaría pública localizada en Av. Paseo del Pedregal 150, Jardines del Pedregal, Ciudad de México; presta diversos servicios notariales a la comunidad.',
+       jobs: ['Notario Auxiliar', 'Asistente legal'],
+       reviews: [] }
   ];
 
   // Recuperar datos desde localStorage si existen para mantener reseñas añadidas
@@ -135,96 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const firmsList = document.getElementById('firmsList');
   const searchInput = document.getElementById('search');
-
-  // Selección de elementos para el aviso de privacidad y sugerencia de despachos
-  const privacyLink = document.getElementById('privacyLink');
-  const privacyModal = document.getElementById('privacyModal');
-  const closePrivacy = document.getElementById('closePrivacy');
-  const addFirmBtn = document.getElementById('addFirmBtn');
-  const addFirmModal = document.getElementById('addFirmModal');
-  const closeAddFirm = document.getElementById('closeAddFirm');
-  const addFirmForm = document.getElementById('addFirmForm');
-  const addFirmMessage = document.getElementById('addFirmMessage');
-
-  // Elementos del modal de términos y condiciones
-  const termsModal = document.getElementById('termsModal');
-  const acceptTermsBtn = document.getElementById('acceptTermsBtn');
-
-  // Mostrar términos y condiciones si el usuario aún no los ha aceptado
-  try {
-    const accepted = localStorage.getItem('termsAccepted');
-    if (!accepted || accepted !== 'true') {
-      if (termsModal) termsModal.style.display = 'flex';
-    }
-  } catch (err) {
-    // Si localStorage falla, mostrar el modal de todas formas
-    if (termsModal) termsModal.style.display = 'flex';
-  }
-  // Aceptar términos
-  if (acceptTermsBtn) {
-    acceptTermsBtn.addEventListener('click', () => {
-      try {
-        localStorage.setItem('termsAccepted', 'true');
-      } catch (err) {
-        // ignore errors
-      }
-      if (termsModal) termsModal.style.display = 'none';
-    });
-  }
-
-  // Mostrar aviso de privacidad al hacer clic en el enlace
-  if (privacyLink) {
-    privacyLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (privacyModal) privacyModal.style.display = 'flex';
-    });
-  }
-  // Cerrar aviso de privacidad
-  if (closePrivacy) {
-    closePrivacy.addEventListener('click', () => {
-      if (privacyModal) privacyModal.style.display = 'none';
-    });
-  }
-  // Mostrar formulario para sugerir nuevo despacho
-  if (addFirmBtn) {
-    addFirmBtn.addEventListener('click', () => {
-      if (addFirmModal) {
-        addFirmModal.style.display = 'flex';
-        // Reiniciar el formulario y el mensaje
-        if (addFirmForm) addFirmForm.reset();
-        if (addFirmForm) addFirmForm.style.display = 'block';
-        if (addFirmMessage) addFirmMessage.classList.add('hidden');
-      }
-    });
-  }
-  // Cerrar formulario de sugerencia
-  if (closeAddFirm) {
-    closeAddFirm.addEventListener('click', () => {
-      if (addFirmModal) addFirmModal.style.display = 'none';
-    });
-  }
-  // Manejar envío del formulario de sugerencia
-  if (addFirmForm) {
-    addFirmForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('firmName').value.trim();
-      const description = document.getElementById('firmDescription').value.trim();
-      const source = document.getElementById('firmSource').value.trim();
-      if (name) {
-        let suggestions = [];
-        try {
-          suggestions = JSON.parse(localStorage.getItem('suggestedFirms')) || [];
-        } catch (err) {
-          suggestions = [];
-        }
-        suggestions.push({ name, description, source, date: new Date().toISOString() });
-        localStorage.setItem('suggestedFirms', JSON.stringify(suggestions));
-        // Mostrar mensaje de agradecimiento
-        if (addFirmForm) addFirmForm.style.display = 'none';
-        if (addFirmMessage) addFirmMessage.classList.remove('hidden');
-      }
-    });
-  }
 
   // Calcula el promedio de una categoría
   function averageByKey(reviews, key) {
@@ -292,4 +223,82 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializa la lista
   renderFirms(firms);
   searchInput.addEventListener('input', filterFirms);
+
+  // ---------- Gestión de modales y términos ----------
+  // Elementos del DOM para privacidad y sugerir nuevo despacho
+  const privacyLink = document.getElementById('privacyLink');
+  const privacyModal = document.getElementById('privacyModal');
+  const closePrivacy = document.getElementById('closePrivacy');
+  const addFirmBtn = document.getElementById('addFirmBtn');
+  const addFirmModal = document.getElementById('addFirmModal');
+  const closeAddFirm = document.getElementById('closeAddFirm');
+  const addFirmForm = document.getElementById('addFirmForm');
+  const addFirmMessage = document.getElementById('addFirmMessage');
+  const termsModal = document.getElementById('termsModal');
+  const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+
+  // Funciones utilitarias para abrir/cerrar modales
+  function openModal(modal) {
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden', 'false');
+    }
+  }
+  function closeModal(modal) {
+    if (modal) {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  // Mostrar aviso de privacidad
+  if (privacyLink) {
+    privacyLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal(privacyModal);
+    });
+  }
+  if (closePrivacy) {
+    closePrivacy.addEventListener('click', () => closeModal(privacyModal));
+  }
+
+  // Mostrar formulario de sugerir despacho
+  if (addFirmBtn) {
+    addFirmBtn.addEventListener('click', () => {
+      openModal(addFirmModal);
+      if (addFirmMessage) addFirmMessage.classList.add('hidden');
+    });
+  }
+  if (closeAddFirm) {
+    closeAddFirm.addEventListener('click', () => closeModal(addFirmModal));
+  }
+
+  // Procesar envío del formulario de sugerencias
+  if (addFirmForm) {
+    addFirmForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('firmName').value.trim();
+      const description = document.getElementById('firmDescription').value.trim();
+      const source = document.getElementById('firmSource').value.trim();
+      const existing = JSON.parse(localStorage.getItem('suggestedFirms') || '[]');
+      existing.push({ name, description, source, date: new Date().toISOString() });
+      localStorage.setItem('suggestedFirms', JSON.stringify(existing));
+      if (addFirmForm) addFirmForm.reset();
+      if (addFirmMessage) addFirmMessage.classList.remove('hidden');
+    });
+  }
+
+  // Mostrar términos de uso si no se han aceptado
+  if (termsModal) {
+    const accepted = localStorage.getItem('termsAccepted');
+    if (!accepted) {
+      openModal(termsModal);
+    }
+    if (acceptTermsBtn) {
+      acceptTermsBtn.addEventListener('click', () => {
+        localStorage.setItem('termsAccepted', 'true');
+        closeModal(termsModal);
+      });
+    }
+  }
 });
