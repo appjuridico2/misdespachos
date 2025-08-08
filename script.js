@@ -136,6 +136,70 @@ document.addEventListener('DOMContentLoaded', () => {
   const firmsList = document.getElementById('firmsList');
   const searchInput = document.getElementById('search');
 
+  // Selección de elementos para el aviso de privacidad y sugerencia de despachos
+  const privacyLink = document.getElementById('privacyLink');
+  const privacyModal = document.getElementById('privacyModal');
+  const closePrivacy = document.getElementById('closePrivacy');
+  const addFirmBtn = document.getElementById('addFirmBtn');
+  const addFirmModal = document.getElementById('addFirmModal');
+  const closeAddFirm = document.getElementById('closeAddFirm');
+  const addFirmForm = document.getElementById('addFirmForm');
+  const addFirmMessage = document.getElementById('addFirmMessage');
+
+  // Mostrar aviso de privacidad al hacer clic en el enlace
+  if (privacyLink) {
+    privacyLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (privacyModal) privacyModal.style.display = 'flex';
+    });
+  }
+  // Cerrar aviso de privacidad
+  if (closePrivacy) {
+    closePrivacy.addEventListener('click', () => {
+      if (privacyModal) privacyModal.style.display = 'none';
+    });
+  }
+  // Mostrar formulario para sugerir nuevo despacho
+  if (addFirmBtn) {
+    addFirmBtn.addEventListener('click', () => {
+      if (addFirmModal) {
+        addFirmModal.style.display = 'flex';
+        // Reiniciar el formulario y el mensaje
+        if (addFirmForm) addFirmForm.reset();
+        if (addFirmForm) addFirmForm.style.display = 'block';
+        if (addFirmMessage) addFirmMessage.classList.add('hidden');
+      }
+    });
+  }
+  // Cerrar formulario de sugerencia
+  if (closeAddFirm) {
+    closeAddFirm.addEventListener('click', () => {
+      if (addFirmModal) addFirmModal.style.display = 'none';
+    });
+  }
+  // Manejar envío del formulario de sugerencia
+  if (addFirmForm) {
+    addFirmForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('firmName').value.trim();
+      const description = document.getElementById('firmDescription').value.trim();
+      const source = document.getElementById('firmSource').value.trim();
+      if (name) {
+        let suggestions = [];
+        try {
+          suggestions = JSON.parse(localStorage.getItem('suggestedFirms')) || [];
+        } catch (err) {
+          suggestions = [];
+        }
+        suggestions.push({ name, description, source, date: new Date().toISOString() });
+        localStorage.setItem('suggestedFirms', JSON.stringify(suggestions));
+        // Mostrar mensaje de agradecimiento
+        if (addFirmForm) addFirmForm.style.display = 'none';
+        if (addFirmMessage) addFirmMessage.classList.remove('hidden');
+      }
+    });
+  }
+
   // Calcula el promedio de una categoría
   function averageByKey(reviews, key) {
     if (!reviews || !reviews.length) return 0;
