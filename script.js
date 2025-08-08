@@ -236,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const addFirmMessage = document.getElementById('addFirmMessage');
   const termsModal = document.getElementById('termsModal');
   const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+  const declineTermsBtn = document.getElementById('declineTermsBtn');
 
   // Funciones utilitarias para abrir/cerrar modales
   function openModal(modal) {
@@ -298,6 +299,16 @@ document.addEventListener('DOMContentLoaded', () => {
       acceptTermsBtn.addEventListener('click', () => {
         localStorage.setItem('termsAccepted', 'true');
         closeModal(termsModal);
+      });
+    }
+    // Si el usuario rechaza los términos, mostramos un mensaje y no permitimos continuar
+    if (declineTermsBtn) {
+      declineTermsBtn.addEventListener('click', () => {
+        // Mostrar un mensaje dentro del modal informando que no puede continuar
+        const content = termsModal.querySelector('.terms-content');
+        if (content) {
+          content.innerHTML = '<h2>Acceso denegado</h2><p>No puedes utilizar este sitio sin aceptar los términos y condiciones. Si deseas usar la plataforma, por favor acepta los términos.</p>';
+        }
       });
     }
   }
