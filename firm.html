@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle del despacho</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .category-item {
+      background-color: #f1f5f9;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+    .category-item h4 {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #072b57;
+    }
+    .category-item p {
+      margin: 5px 0 0 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .reviews-section {
+      margin-top: 30px;
+    }
+    .review {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px 0;
+    }
+    .review:last-child {
+      border-bottom: none;
+    }
+    .review p {
+      margin: 5px 0;
+    }
+    .review .categories {
+      font-size: 0.8rem;
+      color: #555;
+    }
+    .review-form {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f9fafb;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+    .review-form label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    .review-form select,
+    .review-form textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    .review-form textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    .review-form button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #072b57;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .review-form button:hover {
+      background-color: #0a3c80;
+    }
+  </style>
+</head>
+<body>
+  <!-- Encabezado -->
+  <header class="site-header">
+    <div class="container header-content">
+      <h1 class="brand">MisDespachos</h1>
+      <div class="search-wrapper">
+        <input type="text" id="search" placeholder="Busca un despacho..." disabled>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="firmContainer">
+    <!-- El contenido se llenará con JavaScript -->
+  </main>
+
+  <script src="firm.js"></script>
+</body>
+</html>
