@@ -146,6 +146,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const addFirmForm = document.getElementById('addFirmForm');
   const addFirmMessage = document.getElementById('addFirmMessage');
 
+  // Elementos del modal de términos y condiciones
+  const termsModal = document.getElementById('termsModal');
+  const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+
+  // Mostrar términos y condiciones si el usuario aún no los ha aceptado
+  try {
+    const accepted = localStorage.getItem('termsAccepted');
+    if (!accepted || accepted !== 'true') {
+      if (termsModal) termsModal.style.display = 'flex';
+    }
+  } catch (err) {
+    // Si localStorage falla, mostrar el modal de todas formas
+    if (termsModal) termsModal.style.display = 'flex';
+  }
+  // Aceptar términos
+  if (acceptTermsBtn) {
+    acceptTermsBtn.addEventListener('click', () => {
+      try {
+        localStorage.setItem('termsAccepted', 'true');
+      } catch (err) {
+        // ignore errors
+      }
+      if (termsModal) termsModal.style.display = 'none';
+    });
+  }
+
   // Mostrar aviso de privacidad al hacer clic en el enlace
   if (privacyLink) {
     privacyLink.addEventListener('click', (e) => {
