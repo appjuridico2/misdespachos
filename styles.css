@@ -200,10 +200,34 @@ body {
 }
 
 /* Botones en el modal de términos de uso */
+/*
+ * Estilos para el contenedor de términos de uso. Hacemos que el contenido
+ * pueda desplazarse de manera independiente con una altura máxima y
+ * organizamos los elementos en columna para poder anclar los botones al
+ * final. La clase `.terms-content` se aplica junto con `.modal-content` en
+ * index.html.
+ */
+.modal-content.terms-content {
+  max-height: 70vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botones en el modal de términos de uso. Se ubican al final del contenido
+ * gracias al `margin-top: auto`. Además, utilizamos `position: sticky` para
+ * que los botones queden fijos en la parte inferior visible mientras el
+ * usuario navega por el texto de los términos.
+ */
 .terms-buttons {
-  margin-top: 20px;
+  margin-top: auto;
   display: flex;
   gap: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  position: sticky;
+  bottom: 0;
+  background-color: #fff;
 }
 
 .terms-buttons button {
