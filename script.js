@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+// URL de la base de datos en tiempo real de Firebase donde se guardarán las reseñas.  
+// Se utiliza el formato REST API (`.json`) para leer y escribir datos sin autentificación.
+const DATABASE_URL = 'https://misdespachos-34343-default-rtdb.firebaseio.com';
+
+document.addEventListener('DOMContentLoaded', async () => {
   // Datos de ejemplo con categorías (ambiente, prestigio, oportunidades)
   // Lista de despachos basados en las clasificaciones de Chambers and Partners.
   // Cada despacho tiene un id único, un nombre y una breve descripción genérica.
@@ -143,28 +147,46 @@ document.addEventListener('DOMContentLoaded', () => {
        reviews: [] }
   ];
 
-  // Recuperar datos desde localStorage si existen para mantener reseñas añadidas
-  const stored = localStorage.getItem('firmsData');
-  if (stored) {
+
+  // -------------------------------------------------------------------------
+  // Integración con Firebase Realtime Database
+  // -------------------------------------------------------------------------
+  // Para compartir reseñas entre todos los visitantes, se consultan y guardan
+  // en la base de datos remota. Las reseñas ya no se almacenan de manera
+  // definitiva en localStorage (aunque aún lo usamos para sugerencias y otros
+  // estados del sitio).  
+  // Esta función obtiene todas las reseñas desde la base de datos y las
+  // distribuye en los despachos correspondientes. Las reseñas remotas deben
+  // tener un campo `firmId` para indicar a qué despacho pertenecen.
+  async function fetchReviewsFromDB() {
     try {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) {
-        // Para cada despacho almacenado, buscar su id y actualizar el objeto en memoria
-        parsed.forEach(storedFirm => {
-          const idx = firms.findIndex(f => f.id === storedFirm.id);
-          if (idx !== -1) {
-            // Copiar las reseñas y cualquier otra info persistente
-            firms[idx] = { ...firms[idx], ...storedFirm };
-          }
-        });
-      }
-    } catch (e) {
-      console.error('No se pudo parsear datos de despachos desde localStorage', e);
+      const response = await fetch(`${DATABASE_URL}/reviews.json`);
+      if (!response.ok) throw new Error('Error al obtener reseñas remotas');
+      const data = await response.json();
+      if (!data) return;
+      // Limpiar reseñas actuales en memoria antes de aplicar las remotas
+      firms.forEach(f => {
+        f.reviews = [];
+      });
+      // data es un objeto donde cada propiedad es una reseña con ID aleatorio
+      Object.values(data).forEach(item => {
+        const firm = firms.find(f => f.id === item.firmId);
+        if (firm) {
+          firm.reviews.push({
+            ambiente: item.ambiente,
+            prestigio: item.prestigio,
+            oportunidades: item.oportunidades,
+            comment: item.comment
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error al sincronizar reseñas con Firebase', error);
     }
   }
-  // Almacena la lista completa (incluyendo nuevos despachos) de vuelta en localStorage
-  // Esto asegura que se conserven las reseñas existentes pero también se incluyan los nuevos despachos
-  localStorage.setItem('firmsData', JSON.stringify(firms));
+
+  // Descarga las reseñas remotas antes de renderizar la lista inicial.
+  await fetchReviewsFromDB();
 
   const firmsList = document.getElementById('firmsList');
   const searchInput = document.getElementById('search');

@@ -1,10 +1,13 @@
-document.addEventListener('DOMContentLoaded', () => {
+// URL de la base de datos en tiempo real de Firebase (misdespachos-34343).
+const DATABASE_URL = 'https://misdespachos-34343-default-rtdb.firebaseio.com';
+
+document.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('firmContainer');
   // Obtiene ID desde la URL
   const params = new URLSearchParams(window.location.search);
   const id = parseInt(params.get('id'), 10);
 
-  // Recupera datos desde localStorage
+  // Recupera datos desde localStorage (sólo para la lista de despachos, ya no se usan las reseñas locales)
   let firms = [];
   try {
     const stored = localStorage.getItem('firmsData');
@@ -38,8 +41,51 @@ document.addEventListener('DOMContentLoaded', () => {
     return 'rating-low';
   }
 
+  // -------------------------------------------------------------------------
+  // Integración con Firebase
+  // -------------------------------------------------------------------------
+  // Obtiene las reseñas remotas para este despacho y las guarda en firm.reviews.
+  async function fetchReviewsFromDB() {
+    try {
+      const response = await fetch(`${DATABASE_URL}/reviews.json`);
+      if (!response.ok) throw new Error('Error al obtener reseñas remotas');
+      const data = await response.json();
+      // Limpiar reseñas actuales
+      firm.reviews = [];
+      if (data) {
+        Object.values(data).forEach(item => {
+          if (item.firmId === id) {
+            firm.reviews.push({
+              ambiente: item.ambiente,
+              prestigio: item.prestigio,
+              oportunidades: item.oportunidades,
+              comment: item.comment
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error al sincronizar reseñas con Firebase', error);
+    }
+  }
+
+  // Envía una nueva reseña a la base de datos.
+  async function postReviewToDB(review) {
+    try {
+      await fetch(`${DATABASE_URL}/reviews.json`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(review)
+      });
+    } catch (error) {
+      console.error('Error al guardar reseña en Firebase', error);
+    }
+  }
+
   // Renderiza la página completa
-  function render() {
+  async function render() {
+    // Asegurarse de tener las reseñas remotas antes de mostrar el contenido
+    await fetchReviewsFromDB();
     const avgAmbiente = averageByKey(firm.reviews, 'ambiente');
     const avgPrestigio = averageByKey(firm.reviews, 'prestigio');
     const avgOportunidades = averageByKey(firm.reviews, 'oportunidades');
@@ -148,21 +194,30 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendChild(formDiv);
 
     const newReviewForm = document.getElementById('newReviewForm');
-    newReviewForm.addEventListener('submit', (e) => {
+    newReviewForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const amb = parseInt(document.getElementById('ambiente').value);
       const pre = parseInt(document.getElementById('prestigio').value);
       const op = parseInt(document.getElementById('oportunidades').value);
       const com = document.getElementById('comment').value.trim();
       if (!amb || !pre || !op || !com) return;
-      firm.reviews.push({ ambiente: amb, prestigio: pre, oportunidades: op, comment: com });
-      // Actualiza datos en localStorage
-      localStorage.setItem('firmsData', JSON.stringify(firms));
-      // Vuelve a renderizar
-      render();
+      // Construir objeto de reseña con el id del despacho
+      const review = {
+        firmId: id,
+        ambiente: amb,
+        prestigio: pre,
+        oportunidades: op,
+        comment: com
+      };
+      // Enviar a la base de datos remota
+      await postReviewToDB(review);
+      // Vuelve a renderizar para mostrar la nueva reseña
+      await render();
+      // Opcional: restablecer el formulario
+      newReviewForm.reset();
     });
   }
 
   // Inicializa página
-  render();
+  await render();
 });
