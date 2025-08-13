@@ -82,10 +82,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  // -------------------------------------------------------------------------
+  // Vacantes: obtención y publicación
+  // -------------------------------------------------------------------------
+  // Obtiene las vacantes remotas para este despacho y las guarda en firm.vacancies.
+  async function fetchVacanciesFromDB() {
+    try {
+      const response = await fetch(`${DATABASE_URL}/vacancies.json`);
+      if (!response.ok) throw new Error('Error al obtener vacantes remotas');
+      const data = await response.json();
+      // Inicializar arreglo de vacantes
+      firm.vacancies = [];
+      if (data) {
+        Object.values(data).forEach(item => {
+          if (item.firmId === id) {
+            firm.vacancies.push({
+              title: item.title,
+              description: item.description,
+              contact: item.contact
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error al sincronizar vacantes con Firebase', error);
+    }
+  }
+
+  // Envía una nueva vacante a la base de datos.
+  async function postVacancyToDB(vacancy) {
+    try {
+      await fetch(`${DATABASE_URL}/vacancies.json`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vacancy)
+      });
+    } catch (error) {
+      console.error('Error al guardar vacante en Firebase', error);
+    }
+  }
+
   // Renderiza la página completa
   async function render() {
-    // Asegurarse de tener las reseñas remotas antes de mostrar el contenido
+    // Asegurarse de tener las reseñas y vacantes remotas antes de mostrar el contenido
     await fetchReviewsFromDB();
+    await fetchVacanciesFromDB();
     const avgAmbiente = averageByKey(firm.reviews, 'ambiente');
     const avgPrestigio = averageByKey(firm.reviews, 'prestigio');
     const avgOportunidades = averageByKey(firm.reviews, 'oportunidades');
@@ -192,6 +233,68 @@ document.addEventListener('DOMContentLoaded', async () => {
       </form>
     `;
     container.appendChild(formDiv);
+
+    // ---------------------------------------------------------------------
+    // Sección de vacantes
+    // ---------------------------------------------------------------------
+    const vacDiv = document.createElement('div');
+    vacDiv.classList.add('vacancies-section');
+    const vacTitle = document.createElement('h3');
+    const vacCount = firm.vacancies && firm.vacancies.length ? firm.vacancies.length : 0;
+    vacTitle.textContent = `Vacantes (${vacCount})`;
+    vacDiv.appendChild(vacTitle);
+    if (vacCount) {
+      firm.vacancies.forEach(v => {
+        const vd = document.createElement('div');
+        vd.classList.add('vacancy');
+        vd.innerHTML = `
+          <h4>${v.title}</h4>
+          <p><strong>Contacto:</strong> ${v.contact}</p>
+          <p>${v.description}</p>
+        `;
+        vacDiv.appendChild(vd);
+      });
+    } else {
+      const noVac = document.createElement('p');
+      noVac.textContent = 'Aún no hay vacantes para este despacho.';
+      vacDiv.appendChild(noVac);
+    }
+    container.appendChild(vacDiv);
+
+    // Formulario para nueva vacante
+    const vacFormDiv = document.createElement('div');
+    vacFormDiv.classList.add('vacancy-form');
+    vacFormDiv.innerHTML = `
+      <h3>Publicar vacante</h3>
+      <form id="newVacancyForm">
+        <label for="vacTitle">Puesto</label>
+        <input id="vacTitle" type="text" required />
+        <label for="vacDescription">Descripción de la vacante</label>
+        <textarea id="vacDescription" required></textarea>
+        <label for="vacContact">Medio de contacto</label>
+        <input id="vacContact" type="text" required />
+        <button type="submit">Publicar vacante</button>
+      </form>
+    `;
+    container.appendChild(vacFormDiv);
+
+    const newVacancyForm = document.getElementById('newVacancyForm');
+    newVacancyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('vacTitle').value.trim();
+      const description = document.getElementById('vacDescription').value.trim();
+      const contact = document.getElementById('vacContact').value.trim();
+      if (!title || !description || !contact) return;
+      const vacancy = {
+        firmId: id,
+        title,
+        description,
+        contact
+      };
+      await postVacancyToDB(vacancy);
+      await render();
+      newVacancyForm.reset();
+    });
 
     const newReviewForm = document.getElementById('newReviewForm');
     newReviewForm.addEventListener('submit', async (e) => {
